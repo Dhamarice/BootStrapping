@@ -16,7 +16,7 @@ object BootStrap {
 
     val population = rdd.mapPartitionsWithIndex {
       (idx, iter) => if (idx == 0) iter.drop(1) else iter
-    }.map(x => (x.split(",")(1),x.split(",")(4)))
+    }.map(x => (x.split(",")(1),x.split(",")(4))).cache()
 
     val sqlContext= new SQLContext(sc)
     import sqlContext.implicits._
@@ -27,10 +27,10 @@ object BootStrap {
 
     val list = new ListBuffer[Array[(String, String, String)]]()
 
-    val takeSample =  population.sample(false,0.25)
+    val takeSample =  population.sample(false,0.25).cache()
 
      for(a <- 1 to 100){
-       val resampledData = takeSample.sample(true,1.0)
+       val resampledData = takeSample.sample(true,1.0).cache()
 
        val meanVarResample = resampledData.toDF("Experience", "Wage")
 
